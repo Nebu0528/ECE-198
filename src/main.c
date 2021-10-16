@@ -6,9 +6,9 @@
 // Each one is surrounded by an #ifdef ... #endif block inside of main().
 // To enable a particular application, you should remove the comment (//) in
 // front of exactly ONE of the following lines:
-#define BUTTON_BLINK
+//#define BUTTON_BLINK
 //#define TIME_RAND
-//#define KEYPAD
+#define KEYPAD
 //#define SEVEN_SEGMENT
 //#define KEYPAD_SEVEN_SEGMENT
 //#define COLOR_LED
@@ -108,9 +108,9 @@ int main(void)
     InitializeKeypad();
     while (true)
     {
-        int key = ReadKeypad();  // returns a number from 0 to 15 indicating the key, or -1 if no key is pressed
-        if (key >= 0)
-            SerialPutc(keypad_symbols[key])
+        while (ReadKeypad() < 0);  // returns a number from 0 to 15 indicating the key, or -1 if no key is pressed
+        SerialPutc(keypad_symbols[ReadKeypad()]);
+        while (ReadKeypad() >= 0);
     }
 #endif
 
