@@ -115,7 +115,7 @@ int main(void)
     }
 #endif
 
-#ifdef KEYPAD_SEVEN_SEGMENT
+#ifdef 
     // Combines the previous two examples, displaying numbers from the keypad on the 7-segment display.
 
     // this string contains the symbols on the external keypad
