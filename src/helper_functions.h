@@ -1,0 +1,1 @@
+int sequenceGenerator(void);
