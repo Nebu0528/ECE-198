@@ -1,5 +1,4 @@
 //Random Digit Generator
-//Made by Neel Bullywon
 
 #include <stdio.h>
 #include <stdlib.h>
