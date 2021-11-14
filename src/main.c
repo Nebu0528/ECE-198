@@ -22,6 +22,16 @@
 
 #include "ece198.h"
 
+//helper functions
+int sequenceGenerator(void) {
+    int sequence = 0;
+    srand(time(NULL));
+    sequence = rand() % 99999999;
+    return sequence;
+}
+
+
+
 int main(void)
 {
     HAL_Init(); // initialize the Hardware Abstraction Layer
@@ -60,43 +70,43 @@ int main(void)
     }
 #endif
 
-#ifdef TIME_RAND
-    // This illustrates the use of HAL_GetTick() to get the current time,
-    // plus the use of srand() and random() for random number generation.
+// #ifdef TIME_RAND
+//     // This illustrates the use of HAL_GetTick() to get the current time,
+//     // plus the use of srand() and random() for random number generation.
     
-    // Note that you must have "#include <stdlib.h>"" at the top of your main.c
-    // in order to use the srand() and random() functions.
+//     // Note that you must have "#include <stdlib.h>"" at the top of your main.c
+//     // in order to use the srand() and random() functions.
 
-    while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));  // wait for button press
-    //srand(HAL_GetTick());    // set the random seed to be the time in milliseconds that it took the user to press the button
-    // if you comment out the line above, your program will get the same sequence of random numbers
-    // every time you run it (which may be useful in some cases)
+//     while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));  // wait for button press
+//     //srand(HAL_GetTick());    // set the random seed to be the time in milliseconds that it took the user to press the button
+//     // if you comment out the line above, your program will get the same sequence of random numbers
+//     // every time you run it (which may be useful in some cases)
 
-    while (true) // loop forever
-    {
-        while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));   // wait for button press
-        // Display the time in milliseconds along with a random number.
-        // We use the sprintf() function to put the formatted output into a buffer;
-        // see https://www.tutorialspoint.com/c_standard_library/c_function_sprintf.htm for
-        // information about this function
-        char buff[100];
-        sprintf(buff, "Time: %lu ms   Random = %ld\r\n", HAL_GetTick(), random());
-        SerialPuts(buff); // transmit the buffer to the host computer where it gets displayed in VSCode console
-        while (!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));  // wait for button to be released
-    }
-#endif
+//     while (true) // loop forever
+//     {
+//         while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));   // wait for button press
+//         // Display the time in milliseconds along with a random number.
+//         // We use the sprintf() function to put the formatted output into a buffer;
+//         // see https://www.tutorialspoint.com/c_standard_library/c_function_sprintf.htm for
+//         // information about this function
+//         char buff[100];
+//         sprintf(buff, "Time: %lu ms   Random = %ld\r\n", HAL_GetTick(), random());
+//         SerialPuts(buff); // transmit the buffer to the host computer where it gets displayed in VSCode console
+//         while (!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));  // wait for button to be released
+//     }
+// #endif
 
-#ifdef SEVEN_SEGMENT
-    // Display the numbers 0 to 9 inclusive on the 7-segment display, pausing for a second between each one.
-    // Remember that the GND connection on the display must go through a current-limiting resistor!
-    Initialize7Segment();
-    while (true)
-        for (int i = 0; i < 10; ++i)
-        {
-            Display7Segment(i);
-            HAL_Delay(1000);
-        }
-#endif
+// #ifdef SEVEN_SEGMENT
+//     // Display the numbers 0 to 9 inclusive on the 7-segment display, pausing for a second between each one.
+//     // Remember that the GND connection on the display must go through a current-limiting resistor!
+//     Initialize7Segment();
+//     while (true)
+//         for (int i = 0; i < 10; ++i)
+//         {
+//             Display7Segment(i);
+//             HAL_Delay(1000);
+//         }
+// #endif
 
 #ifdef KEYPAD
     // Read buttons on the keypad and display them on the console.
@@ -151,24 +161,24 @@ int main(void)
     }
 #endif
 
-#ifdef ROTARY_ENCODER
-    // Read values from the rotary encoder and update a count, which is displayed in the console.
-    InitializePin(GPIOB, GPIO_PIN_5, GPIO_MODE_INPUT, GPIO_PULLUP, 0);   // initialize CLK pin
-    InitializePin(GPIOB, GPIO_PIN_4, GPIO_MODE_INPUT, GPIO_PULLUP, 0);   // initialize DT pin
-    InitializePin(GPIOB, GPIO_PIN_10, GPIO_MODE_INPUT, GPIO_PULLUP, 0);  // initialize SW pin
+// #ifdef ROTARY_ENCODER
+//     // Read values from the rotary encoder and update a count, which is displayed in the console.
+//     InitializePin(GPIOB, GPIO_PIN_5, GPIO_MODE_INPUT, GPIO_PULLUP, 0);   // initialize CLK pin
+//     InitializePin(GPIOB, GPIO_PIN_4, GPIO_MODE_INPUT, GPIO_PULLUP, 0);   // initialize DT pin
+//     InitializePin(GPIOB, GPIO_PIN_10, GPIO_MODE_INPUT, GPIO_PULLUP, 0);  // initialize SW pin
     
-    bool previousClk = false;  // needed by ReadEncoder() to store the previous state of the CLK pin
-    int count = 0;             // this gets incremented or decremented as we rotate the encoder
-    while (true)
-    {
-        count += ReadEncoder(GPIOB, GPIO_PIN_5, GPIOB, GPIO_PIN_4, &previousClk);  // update the count by -1, 0 or +1
-        char buff[100];
-        sprintf(buff, "%d \r", count);
-        SerialPuts(buff);
-        bool sw = !HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10);  // read the push-switch on the encoder (active low, so we invert it using !)
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, sw); // turn on LED when encoder switch is pushed in
-    }
-#endif
+//     bool previousClk = false;  // needed by ReadEncoder() to store the previous state of the CLK pin
+//     int count = 0;             // this gets incremented or decremented as we rotate the encoder
+//     while (true)
+//     {
+//         count += ReadEncoder(GPIOB, GPIO_PIN_5, GPIOB, GPIO_PIN_4, &previousClk);  // update the count by -1, 0 or +1
+//         char buff[100];
+//         sprintf(buff, "%d \r", count);
+//         SerialPuts(buff);
+//         bool sw = !HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10);  // read the push-switch on the encoder (active low, so we invert it using !)
+//         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, sw); // turn on LED when encoder switch is pushed in
+//     }
+// #endif
 
 #ifdef PWM
     // use Pulse Width Modulation to fade the LED in and out
@@ -194,6 +204,16 @@ int main(void)
         }
     }
 #endif
+//main function starts here:
+//turn sequence into array of integers
+    int sequence = sequenceGenerator();
+    int sequenceArray[8];
+    for (int i =0; i < 8; i++) {
+        sequenceArray[i] = sequence % 10;
+        sequence = sequence / 10;
+    }
+    //initialize the pins
+    
     return 0;
 }
 
