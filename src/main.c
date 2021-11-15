@@ -14,14 +14,17 @@
 //#define COLOR_LED
 //#define ROTARY_ENCODER
 //#define PWM
-
+#include <time.h>
 #include <stdbool.h> // booleans, i.e. true and false
 #include <stdio.h>   // sprintf() function
 #include <stdlib.h>  // srand() and random() functions
 
-
 #include "ece198.h"
 
+void delay(double milliseconds){
+    clock_t start_time = clock();
+    while (clock() < start_time + milliseconds);
+}
 //helper functions
 int sequenceGenerator(void) {
     int sequence = 0;
@@ -30,7 +33,15 @@ int sequenceGenerator(void) {
     return sequence;
 }
 
-
+bool processTurn(int currentSequence[], int size, int stopIndex) {
+    for (int i =0; i < stopIndex; i++) {
+        SerialPutc(currentSequence[i]);
+        delay(500);
+    }
+    //add endl;to serial port
+    SerialPutc('\n');
+ 
+}
 
 int main(void)
 {
@@ -110,7 +121,6 @@ int main(void)
 
 #ifdef KEYPAD
     // Read buttons on the keypad and display them on the console.
-
     // this string contains the symbols on the external keypad
     // (they may be different for different keypad layouts)
     char *keypad_symbols = "123A456B789C*0#D";
@@ -125,23 +135,23 @@ int main(void)
     }
 #endif
 
-#ifdef 
-    // Combines the previous two examples, displaying numbers from the keypad on the 7-segment display.
+// #ifdef 
+//     // Combines the previous two examples, displaying numbers from the keypad on the 7-segment display.
 
-    // this string contains the symbols on the external keypad
-    // (they may be different for different keypad layouts)
-    char *keypad_symbols = "123A456B789C*0#D";
-    // note that they're numbered from left to right and top to bottom, like reading words on a page
+//     // this string contains the symbols on the external keypad
+//     // (they may be different for different keypad layouts)
+//     char *keypad_symbols = "123A456B789C*0#D";
+//     // note that they're numbered from left to right and top to bottom, like reading words on a page
 
-    InitializeKeypad();
-    Initialize7Segment();
-    while (true)
-    {
-        int key = ReadKeypad();
-        if (key >= 0)
-            Display7Segment(keypad_symbols[key]-'0');  // the -'0' converts an ascii digit to an actual number
-    }
-#endif
+//     InitializeKeypad();
+//     Initialize7Segment();
+//     while (true)
+//     {
+//         int key = ReadKeypad();
+//         if (key >= 0)
+//             Display7Segment(keypad_symbols[key]-'0');  // the -'0' converts an ascii digit to an actual number
+//     }
+// #endif
 
 #ifdef COLOR_LED
     // Cycle through all 8 possible colors (including off and white) as the on-board button is pressed.
