@@ -29,9 +29,8 @@ void delay(double milliseconds){
 //helper functions
 int sequenceGenerator(void) {
     int sequence = 0;
-    //srand(time(NULL));
-    ///sequence = rand() % 99999999;
-    sequence = 12345678;
+    srand(time(NULL));
+    sequence = rand() % 99999999;
     return sequence;
 }
 
@@ -54,6 +53,16 @@ bool processTurn(int currentSequence[], int size, int stopIndex) {
 }
 
 int main(void) {
+    int sequence = sequenceGenerator();
+    int sequenceArray[8];
+    for (int i =0; i < 8; i++) {
+        sequenceArray[i] = sequence % 10;
+        sequence = sequence / 10;
+    }
+    //print sequence to console
+    for (int i =0; i < 8; i++) {
+        printf("%d", sequenceArray[i]);
+    }
     //initialize the pins
     HAL_Init(); // initialize the Hardware Abstraction Layer
 
@@ -66,7 +75,7 @@ int main(void) {
 
     // initialize the pins to be input, output, alternate function, etc
 
-    InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0); // initialize the pin that the on-board LED is on
+    InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);// initialize the pin that the on-board LED is on
     // note: the on-board pushbutton is fine with default values (input, and no pull-up resistor required since there's one on the board)
 
     // set up for serial communication to the host computer
@@ -138,21 +147,21 @@ int main(void) {
 //         }
 // #endif
 
-// #ifdef KEYPAD
-//     // Read buttons on the keypad and display them on the console.
-//     // this string contains the symbols on the external keypad
-//     // (they may be different for different keypad layouts)
-//     char *keypad_symbols = "123A456B789C*0#D";
-//     // note that they're numbered from left to right and top to bottom, like reading words on a page
+#ifdef KEYPAD
+    // Read buttons on the keypad and display them on the console.
+    // this string contains the symbols on the external keypad
+    // (they may be different for different keypad layouts)
+    char *keypad_symbols = "123A456B789C*0#D";
+    // note that they're numbered from left to right and top to bottom, like reading words on a page
 
-//     InitializeKeypad();
-//     while (true)
-//     {
-//         while (ReadKeypad() < 0);  // returns a number from 0 to 15 indicating the key, or -1 if no key is pressed
-//         SerialPutc(keypad_symbols[ReadKeypad()]);
-//         while (ReadKeypad() >= 0);
-//     }
-// #endif
+    InitializeKeypad();
+    while (true)
+    {
+        while (ReadKeypad() < 0);  // returns a number from 0 to 15 indicating the key, or -1 if no key is pressed
+        SerialPutc(keypad_symbols[ReadKeypad()]);
+        while (ReadKeypad() >= 0);
+    }
+#endif
 
 // #ifdef 
 //     // Combines the previous two examples, displaying numbers from the keypad on the 7-segment display.
