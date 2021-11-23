@@ -93,6 +93,8 @@ int main(void) {
     // initialize the pins to be input, output, alternate function, etc
 
     InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
+    //InitializePin(GPIOA, GPIO_PIN_4, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
+    //InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
     // initialize the pin that the on-board LED is on
     // note: the on-board pushbutton is fine with default values (input, and no pull-up resistor required since there's one on the board)
 
@@ -101,11 +103,7 @@ int main(void) {
     SerialSetup(9600);
     int sequence = sequenceGenerator();
     int sequenceArray[8];
-<<<<<<< HEAD
     for (int i =0; i < 8; i++) {
-=======
-    for (int i =0; i < 8; ++i) {
->>>>>>> e4855f71608a922b56aa678db95a17606342cda0
         sequenceArray[i] = sequence % 10;
         sequence = sequence / 10;
     }
