@@ -115,7 +115,7 @@ bool processTurn(int currentSequence[], int size, int stopIndex) {
         }
         if (input != (currentSequence[i]+'0')) {
             SerialPutc('L');
-            //return false; //user entered a wrong number/button
+            return false; //user entered a wrong number/button
         }
         else {
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
