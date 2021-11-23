@@ -89,7 +89,10 @@ int main(void) {
 
     // initialize the pins to be input, output, alternate function, etc
 
-    InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0); // initialize the pin that the on-board LED is on
+    InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
+    //InitializePin(GPIOA, GPIO_PIN_4, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
+    //InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
+    // initialize the pin that the on-board LED is on
     // note: the on-board pushbutton is fine with default values (input, and no pull-up resistor required since there's one on the board)
 
     // set up for serial communication to the host computer
@@ -97,20 +100,22 @@ int main(void) {
     SerialSetup(9600);
     int sequence = sequenceGenerator();
     int sequenceArray[8];
-    for (int i =0; i < 8; ++i) {
+    for (int i =0; i < 8; i++) {
         sequenceArray[i] = sequence % 10;
         sequence = sequence / 10;
     }
     //print sequence to console
-    for (int i =0; i < 8; ++i) {
-        //SerialPutc(sequenceArray[i]+'0');
-        SerialPutc(sequenceArray[i]+'0');
+    for (int i =0; i < 8; i++) {
+        SerialPutc((char)i);
     }
+<<<<<<< HEAD
     SerialPutc('\n');
     //process all turns
     for (int i =0;i<8;++i) {
         processTurn(sequenceArray, 8, i+1);
     }
+=======
+>>>>>>> c5af500a5fd94ee0ccf3b3f7388262c04bfcbc3d
     // as mentioned above, only one of the following code sections will be used
     // (depending on which of the #define statements at the top of this file has been uncommented)
 
