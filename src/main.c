@@ -38,12 +38,12 @@ int sequenceGenerator(void) {
 }
 
 bool processTurn(int currentSequence[], int size, int stopIndex) {
-    SerialPutc('A');
     for (int i =0; i < stopIndex; ++i) {
         SerialPutc(currentSequence[i]+'0');
         //flash corresponding LED light 
-        HAL_Delay(250);
+        HAL_Delay(400);
     }
+    SerialPutc('\n');
     for (int i =0; i < stopIndex; ++i) {
         //read input from keypad
         SerialPutc('W');
@@ -52,13 +52,11 @@ bool processTurn(int currentSequence[], int size, int stopIndex) {
         while (true) {
             while (ReadKeypad() < 0);  // returns a number from 0 to 15 indicating the key, or -1 if no key is pressed
             input = keypad_symbols[ReadKeypad()];
-            SerialPutc('L');
             break;
             //int input = (int) keypad_symbols[ReadKeypad()];
         }
-        SerialPutc('K');
         if (input != (currentSequence[i]+'0')) {
-            SerialPutc('V');
+            SerialPutc('L');
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
             //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, color & 0x01);
             HAL_Delay(250);
@@ -67,7 +65,6 @@ bool processTurn(int currentSequence[], int size, int stopIndex) {
             return false; //user entered a wrong number/button
         }
         else {
-            SerialPutc('B');
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
             HAL_Delay(250);
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // 250 milliseconds == 1/4 second
@@ -109,7 +106,11 @@ int main(void) {
         //SerialPutc(sequenceArray[i]+'0');
         SerialPutc(sequenceArray[i]+'0');
     }
-    processTurn(sequenceArray, 8, 8);
+    SerialPutc('\n');
+    //process all turns
+    for (int i =0;i<8;++i) {
+        processTurn(sequenceArray, 8, i+1);
+    }
     // as mentioned above, only one of the following code sections will be used
     // (depending on which of the #define statements at the top of this file has been uncommented)
 
