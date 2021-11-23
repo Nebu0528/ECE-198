@@ -8,12 +8,22 @@
 // front of exactly ONE of the following lines:
 //#define BUTTON_BLINK
 //#define TIME_RAND
-#define KEYPAD
+//#define KEYPAD
 //#define SEVEN_SEGMENT
 //#define KEYPAD_SEVEN_SEGMENT
 //#define COLOR_LED
 //#define ROTARY_ENCODER
 //#define PWM
+#define LED_1 GPIO_PIN_1
+#define LED_2 GPIO_PIN_1 //Port C
+#define LED_3 GPIO_PIN_4 //Port A
+#define LED_4 GPIO_PIN_0 //Port A
+#define LED_5 GPIO_PIN_6
+#define LED_6 GPIO_PIN_8 //Port B
+#define LED_7 GPIO_PIN_0 //Port C
+#define LED_8 GPIO_PIN_6 //Port B
+#define LED_9 GPIO_PIN_9 //Port B
+
 #include <time.h>
 #include <stdbool.h> // booleans, i.e. true and false
 #include <stdio.h>   // sprintf() function
@@ -22,6 +32,54 @@
 #include <math.h>    // pow() function
 #include "ece198.h"
 
+void flashLed(int num,int delay) {
+    if (num == 1) {
+        HAL_GPIO_TogglePin(GPIOA,LED_1);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOA,LED_1);
+        return;
+    }
+    else if (num == 2) {
+        HAL_GPIO_TogglePin(GPIOC,LED_2);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOC,LED_2);
+    }
+    else if (num == 3) {
+        HAL_GPIO_TogglePin(GPIOA,LED_3);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOA,LED_3);
+    }
+    else if (num == 4) {
+        HAL_GPIO_TogglePin(GPIOA,LED_4);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOA,LED_4);
+    }
+    else if (num == 5) {
+        HAL_GPIO_TogglePin(GPIOA,LED_5);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOA,LED_5);
+    }
+    else if (num == 6) {
+        HAL_GPIO_TogglePin(GPIOB,LED_6);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOB,LED_6);
+    }
+    else if (num == 7) {
+        HAL_GPIO_TogglePin(GPIOC,LED_7);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOC,LED_7);
+    }
+    else if (num == 8) {
+        HAL_GPIO_TogglePin(GPIOB,LED_8);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOB,LED_8);
+    }
+    else if (num == 9) {
+        HAL_GPIO_TogglePin(GPIOB,LED_9);
+        HAL_Delay(delay);
+        HAL_GPIO_TogglePin(GPIOB,LED_9);
+    }
+}
 char *keypad_symbols = "123A456B789C*0#D";
 void delay(double milliseconds){
     clock_t start_time = clock();
@@ -41,6 +99,7 @@ bool processTurn(int currentSequence[], int size, int stopIndex) {
     for (int i =0; i < stopIndex; ++i) {
         SerialPutc(currentSequence[i]+'0');
         //flash corresponding LED light 
+        flashLed(currentSequence[i],250);
         HAL_Delay(400);
     }
     SerialPutc('\n');
@@ -56,11 +115,7 @@ bool processTurn(int currentSequence[], int size, int stopIndex) {
         }
         if (input != (currentSequence[i]+'0')) {
             SerialPutc('L');
-            HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-            HAL_Delay(250);
-            SerialPutc('\n');
-            HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // 250 milliseconds == 1/4 second
-            return false; //user entered a wrong number/button
+            //return false; //user entered a wrong number/button
         }
         else {
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
@@ -72,6 +127,7 @@ bool processTurn(int currentSequence[], int size, int stopIndex) {
     SerialPutc('\n');
     return true;
 }
+
 
 int main(void) {
     //initialize the pins
@@ -86,7 +142,9 @@ int main(void) {
 
     // initialize the pins to be input, output, alternate function, etc
 
-    InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0); // initialize the pin that the on-board LED is on
+    InitializePin(GPIOA, LED_1 | LED_2 | LED_3 | LED_4|LED_5| GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0); // initialize the pin that the on-board LED is on
+    InitializePin(GPIOB,LED_6|LED_8|LED_9,GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
+    InitializePin(GPIOC,LED_2|LED_7,GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
     // note: the on-board pushbutton is fine with default values (input, and no pull-up resistor required since there's one on the board)
 
     // set up for serial communication to the host computer
@@ -96,6 +154,9 @@ int main(void) {
     int sequenceArray[8];
     for (int i =0; i < 8; ++i) {
         sequenceArray[i] = sequence % 10;
+        if (sequenceArray[i] < 9) {
+            sequenceArray[i]++;
+        }
         sequence = sequence / 10;
     }
     //print sequence to console
@@ -105,11 +166,24 @@ int main(void) {
     }
     SerialPutc('\n');
     //process all turns
+    bool flag = true;
     for (int i =0;i<8;++i) {
         bool result = processTurn(sequenceArray, 8, i+1);
         if (result == false) {
+            flag = false;
             break;
         }
+    }
+    if (flag == true) {
+        for (int i =1;i<=9;++i) {
+            flashLed(i,50);
+        }
+    }
+    else {
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+        HAL_Delay(250);
+        SerialPutc('\n');
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     }
     // as mentioned above, only one of the following code sections will be used
     // (depending on which of the #define statements at the top of this file has been uncommented)
