@@ -38,45 +38,39 @@ int sequenceGenerator(void) {
 }
 
 bool processTurn(int currentSequence[], int size, int stopIndex) {
-    SerialPutc('A');
     for (int i =0; i < stopIndex; ++i) {
         SerialPutc(currentSequence[i]+'0');
         //flash corresponding LED light 
-        HAL_Delay(250);
+        HAL_Delay(400);
     }
+    SerialPutc('\n');
     for (int i =0; i < stopIndex; ++i) {
         //read input from keypad
         SerialPutc('W');
         InitializeKeypad();
         int input;
         while (true) {
-            while (ReadKeypad() < 0);  // returns a number from 0 to 15 indicating the key, or -1 if no key is pressed
-            input = keypad_symbols[ReadKeypad()];
-            SerialPutc('L');
+            while (ReadKeypad() < 0);
+            input = keypad_symbols[ReadKeypad()]; //read input from keypad
             break;
-            //int input = (int) keypad_symbols[ReadKeypad()];
         }
-        SerialPutc('K');
         if (input != (currentSequence[i]+'0')) {
-            SerialPutc('V');
+            SerialPutc('L');
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-            //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, color & 0x01);
             HAL_Delay(250);
             SerialPutc('\n');
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // 250 milliseconds == 1/4 second
             return false; //user entered a wrong number/button
         }
         else {
-            SerialPutc('B');
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-            HAL_Delay(250);
-            HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // 250 milliseconds == 1/4 second
+            HAL_Delay(250); // 250 milliseconds == 1/4 second
+            HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
         }
     }
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     SerialPutc('\n');
     return true;
-    //add endl;to serial port
 }
 
 int main(void) {
@@ -92,10 +86,7 @@ int main(void) {
 
     // initialize the pins to be input, output, alternate function, etc
 
-    InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
-    //InitializePin(GPIOA, GPIO_PIN_4, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
-    //InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);
-    // initialize the pin that the on-board LED is on
+    InitializePin(GPIOA, GPIO_PIN_5, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0); // initialize the pin that the on-board LED is on
     // note: the on-board pushbutton is fine with default values (input, and no pull-up resistor required since there's one on the board)
 
     // set up for serial communication to the host computer
@@ -103,13 +94,22 @@ int main(void) {
     SerialSetup(9600);
     int sequence = sequenceGenerator();
     int sequenceArray[8];
-    for (int i =0; i < 8; i++) {
+    for (int i =0; i < 8; ++i) {
         sequenceArray[i] = sequence % 10;
         sequence = sequence / 10;
     }
     //print sequence to console
-    for (int i =0; i < 8; i++) {
-        SerialPutc((char)i);
+    for (int i =0; i < 8; ++i) {
+        //SerialPutc(sequenceArray[i]+'0');
+        SerialPutc(sequenceArray[i]+'0');
+    }
+    SerialPutc('\n');
+    //process all turns
+    for (int i =0;i<8;++i) {
+        bool result = processTurn(sequenceArray, 8, i+1);
+        if (result == false) {
+            break;
+        }
     }
     // as mentioned above, only one of the following code sections will be used
     // (depending on which of the #define statements at the top of this file has been uncommented)
