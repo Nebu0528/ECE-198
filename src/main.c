@@ -32,6 +32,7 @@
 #include <math.h>    // pow() function
 #include "ece198.h"
 
+//Functions
 void toggleAllLEDs(void) {
     HAL_GPIO_TogglePin(GPIOA,LED_1);
     HAL_GPIO_TogglePin(GPIOC,LED_2);
@@ -114,11 +115,7 @@ void flashLed(int num,int delay) {
     }
 }
 char *keypad_symbols = "123A456B789C*0#D";
-void delay(double milliseconds){
-    clock_t start_time = clock();
-    while (clock() < start_time + milliseconds);
-}
-//helper functions
+
 int sequenceGenerator(void) {
     int sequence = 0;
     while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));
