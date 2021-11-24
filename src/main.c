@@ -122,7 +122,7 @@ int sequenceGenerator(void) {
     srand(HAL_GetTick());
     int sequence = 0;
     for (int i = 1; i < 100000000; i = i * 10) {
-        SerialPutc('O');
+        //SerialPutc('O');
         int randomNum = (rand() % 9) + 1;
         sequence += randomNum * i;
     }
