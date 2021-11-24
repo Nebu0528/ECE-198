@@ -117,11 +117,14 @@ void flashLed(int num,int delay) {
 char *keypad_symbols = "123A456B789C*0#D";
 
 int sequenceGenerator(void) {
-    int sequence = 0;
-    while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));
     //blue button to generate random sequence
+    while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13));
     srand(HAL_GetTick());
-    sequence = rand() % 99999999;
+    int sequence = 0;
+    for (int i = 1;i<100000000;i=i*10) {
+        int randomNum = (rand() % 9) + 1;
+        sequence += randomNum * i;
+    }
     return sequence;
 }
 
