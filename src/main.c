@@ -32,7 +32,6 @@
 #include <math.h>    // pow() function
 #include "ece198.h"
 
-<<<<<<< HEAD
 void toggleAllLEDs(void) {
     HAL_GPIO_TogglePin(GPIOA,LED_1);
     HAL_GPIO_TogglePin(GPIOC,LED_2);
@@ -66,8 +65,6 @@ void flashAllLEDs(void) {
     }
 }
 
-=======
->>>>>>> 5cd94029e38fb6be642835ce7b72fbb0baa35315
 void flashLed(int num,int delay) {
     if (num == 1) {
         HAL_GPIO_TogglePin(GPIOA,LED_1);
